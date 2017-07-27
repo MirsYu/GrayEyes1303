@@ -28,13 +28,22 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
+			this.netDeviceScanControl1 = new NetDeviceScanControl.NetDeviceScanControl();
 			this.SuspendLayout();
+			// 
+			// netDeviceScanControl1
+			// 
+			this.netDeviceScanControl1.Location = new System.Drawing.Point(114, 44);
+			this.netDeviceScanControl1.Name = "netDeviceScanControl1";
+			this.netDeviceScanControl1.Size = new System.Drawing.Size(389, 282);
+			this.netDeviceScanControl1.TabIndex = 0;
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(660, 358);
+			this.Controls.Add(this.netDeviceScanControl1);
 			this.Name = "Form1";
 			this.Text = "Form1";
 			this.ResumeLayout(false);
@@ -42,6 +51,8 @@
 		}
 
 		#endregion
+
+		private NetDeviceScanControl.NetDeviceScanControl netDeviceScanControl1;
 	}
 }
 
