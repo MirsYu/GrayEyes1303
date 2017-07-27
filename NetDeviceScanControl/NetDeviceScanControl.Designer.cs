@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
 			this.txtBox_GateWay = new System.Windows.Forms.TextBox();
-			this.textBox2 = new System.Windows.Forms.TextBox();
+			this.txtBox_TargetIP = new System.Windows.Forms.TextBox();
 			this.textBox3 = new System.Windows.Forms.TextBox();
 			this.btn_GetDeviceIP = new System.Windows.Forms.Button();
 			this.label1 = new System.Windows.Forms.Label();
@@ -45,12 +45,12 @@
 			this.txtBox_GateWay.Size = new System.Drawing.Size(100, 21);
 			this.txtBox_GateWay.TabIndex = 0;
 			// 
-			// textBox2
+			// txtBox_TargetIP
 			// 
-			this.textBox2.Location = new System.Drawing.Point(218, 81);
-			this.textBox2.Name = "textBox2";
-			this.textBox2.Size = new System.Drawing.Size(100, 21);
-			this.textBox2.TabIndex = 1;
+			this.txtBox_TargetIP.Location = new System.Drawing.Point(218, 81);
+			this.txtBox_TargetIP.Name = "txtBox_TargetIP";
+			this.txtBox_TargetIP.Size = new System.Drawing.Size(100, 21);
+			this.txtBox_TargetIP.TabIndex = 1;
 			// 
 			// textBox3
 			// 
@@ -115,7 +115,7 @@
 			this.Controls.Add(this.label1);
 			this.Controls.Add(this.btn_GetDeviceIP);
 			this.Controls.Add(this.textBox3);
-			this.Controls.Add(this.textBox2);
+			this.Controls.Add(this.txtBox_TargetIP);
 			this.Controls.Add(this.txtBox_GateWay);
 			this.Name = "NetDeviceScanControl";
 			this.Size = new System.Drawing.Size(389, 282);
@@ -127,7 +127,7 @@
 		#endregion
 
 		private System.Windows.Forms.TextBox txtBox_GateWay;
-		private System.Windows.Forms.TextBox textBox2;
+		private System.Windows.Forms.TextBox txtBox_TargetIP;
 		private System.Windows.Forms.TextBox textBox3;
 		private System.Windows.Forms.Button btn_GetDeviceIP;
 		private System.Windows.Forms.Label label1;

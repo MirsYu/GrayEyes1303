@@ -12,6 +12,9 @@ using System.Text.RegularExpressions;
 using System.Management;
 using System.Management.Instrumentation;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
+using System.Threading;
+using System.IO;
 
 namespace NetDeviceScanControl
 {
@@ -24,8 +27,165 @@ namespace NetDeviceScanControl
 
 		private void btn_GetDeviceIP_Click(object sender, EventArgs e)
 		{
-			txtBox_GateWay.Text = GetGateWay();
+			string strGateWay = "";
+			strGateWay = GetGateWay();
+			txtBox_GateWay.Text = strGateWay;
+			txtBox_TargetIP.Text = ScanActiveIP(strGateWay);
 		}
+
+		public string ScanActiveIP(string strGateWay)
+		{
+			string strPingIp = "";
+			int index = -1;
+			Ping ping;
+			index = strGateWay.LastIndexOf('.')+1;
+			strPingIp = strGateWay.Remove(index, strGateWay.Length - index);
+			for (int ipIndex =1; ipIndex < 255; ipIndex++)
+			{
+				strPingIp = strGateWay.Remove(index, strGateWay.Length - index);
+				ping = new Ping();
+				strPingIp += ipIndex.ToString();
+				if (strPingIp == "192.168.0.1234")
+				{
+
+				}
+				if(IsPingIP(strPingIp))
+				{
+					if (CheckPackage(strPingIp))
+					{
+						return strPingIp;
+					}
+				}
+			}
+			return "Error";
+		}
+
+		#region CheckPackage
+
+		public DynamicBufferManager recDynBuffer;
+		private byte[] startCode;
+		private byte[] endCode;
+		private Thread threadClient;
+		private int length;
+		private int lastEndPosition;
+		private int lastStartPosition;
+
+		private bool bResult = false;
+
+		public bool CheckPackage(string strIpAddress)
+		{
+			recDynBuffer = new DynamicBufferManager(0xa00000);
+			this.startCode = new byte[] { 0xff, 0xd8, 0xff };
+			this.endCode = new byte[] { 0xff, 0xd9 };
+			Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			IPAddress ip = IPAddress.Parse(strIpAddress);
+			try
+			{
+				socket.Connect(new IPEndPoint(ip, 20000));
+				threadClient = new Thread(new ParameterizedThreadStart(this.ReceiveData));
+				threadClient.IsBackground = true;
+				threadClient.Start(socket);
+				Thread.Sleep(2000);
+				if (strIpAddress == "192.168.0.102")
+				{
+
+				}
+				if (bResult)
+					return true;
+				else
+					return false;
+			}
+			catch (Exception)
+			{
+				return false;
+			}
+
+		}
+
+		private void ReceiveData(object clienSocket)
+		{
+			byte[] buffMsgRec = new byte[0xa00000];
+			Socket clien = clienSocket as Socket;
+			while (true)
+			{
+				length = clien.Receive(buffMsgRec);
+				this.recDynBuffer.WriteBuffer(buffMsgRec, 0, length);
+				showData();
+			}
+		}
+
+		private void showData()
+		{
+			int startIndex = -1;
+			int num2 = -1;
+			if ((this.lastStartPosition != -1) && (this.lastEndPosition != -1))
+			{
+				this.recDynBuffer.Clear(this.lastEndPosition);
+				this.lastStartPosition = this.lastEndPosition = -1;
+			}
+			startIndex = this.IndexOf(this.recDynBuffer.Buffer, this.startCode, 0, this.recDynBuffer.DataCount);
+			if (startIndex != -1 && bResult == false)
+			{
+				this.lastStartPosition = startIndex;
+				num2 = this.IndexOf(this.recDynBuffer.Buffer, this.endCode, startIndex, this.recDynBuffer.DataCount);
+				if (num2 != -1)
+				{
+					bResult = true;
+				}
+			}
+		}
+
+		internal int IndexOf(byte[] srcBytes, byte[] searchBytes, int startIndex, int srcLength)
+		{
+			if (srcBytes != null)
+			{
+				if (searchBytes == null)
+				{
+					return -1;
+				}
+				if ((srcLength == 0) || (srcLength > srcBytes.Length))
+				{
+					return -1;
+				}
+				if ((startIndex >= srcBytes.Length) || (startIndex < 0))
+				{
+					return -1;
+				}
+				if (searchBytes.Length != 0)
+				{
+					if (srcLength < searchBytes.Length)
+					{
+						return -1;
+					}
+					for (int i = startIndex; i < (srcLength - searchBytes.Length); i++)
+					{
+						if (srcBytes[i] != searchBytes[0])
+						{
+							continue;
+						}
+						if (searchBytes.Length == 1)
+						{
+							return i;
+						}
+						bool flag = true;
+						for (int j = 1; j < searchBytes.Length; j++)
+						{
+							if (srcBytes[i + j] != searchBytes[j])
+							{
+								flag = false;
+								break;
+							}
+						}
+						if (flag)
+						{
+							return i;
+						}
+					}
+				}
+			}
+			return -1;
+		}
+		#endregion
 
 		public string GetGateWay()
 		{
@@ -161,6 +321,7 @@ namespace NetDeviceScanControl
 			}
 			catch
 			{
+				string te = strIP;
 				return false;
 			}
 		}
