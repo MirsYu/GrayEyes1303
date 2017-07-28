@@ -83,15 +83,20 @@ namespace NetDeviceScanControl
 				threadClient = new Thread(new ParameterizedThreadStart(this.ReceiveData));
 				threadClient.IsBackground = true;
 				threadClient.Start(socket);
-				Thread.Sleep(2000);
-				if (strIpAddress == "192.168.0.106")
-				{
-
-				}
+				Thread.Sleep(1500);
+				socket.Close();
+				socket = null;
 				if (bResult)
+				{
+					threadClient.Abort();
+					threadClient = null;
+					GC.Collect();
 					return true;
+				}
 				else
+				{
 					return false;
+				}
 			}
 			catch (Exception)
 			{
@@ -106,9 +111,16 @@ namespace NetDeviceScanControl
 			Socket clien = clienSocket as Socket;
 			while (true)
 			{
-				length = clien.Receive(buffMsgRec);
-				this.recDynBuffer.WriteBuffer(buffMsgRec, 0, length);
-				showData();
+				try
+				{
+					length = clien.Receive(buffMsgRec);
+					this.recDynBuffer.WriteBuffer(buffMsgRec, 0, length);
+					showData();
+				}
+				catch (Exception)
+				{
+				}
+
 			}
 		}
 
@@ -128,6 +140,8 @@ namespace NetDeviceScanControl
 				num2 = this.IndexOf(this.recDynBuffer.Buffer, this.endCode, startIndex, this.recDynBuffer.DataCount);
 				if (num2 != -1)
 				{
+					this.recDynBuffer = null;
+					GC.Collect();
 					bResult = true;
 				}
 			}
@@ -212,6 +226,8 @@ namespace NetDeviceScanControl
 					strGateWay = "Error";
 				}
 			}
+			nics = null;
+			GC.Collect();
 			return strGateWay;
 		}
 
@@ -317,6 +333,9 @@ namespace NetDeviceScanControl
 				PingReply reply = ping.Send(strIP, 500);
 				if (reply.Status == IPStatus.Success)
 				{
+					ping = null;
+					reply = null;
+					GC.Collect();
 					return true;
 				}else
 				{
