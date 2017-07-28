@@ -45,10 +45,6 @@ namespace NetDeviceScanControl
 				strPingIp = strGateWay.Remove(index, strGateWay.Length - index);
 				ping = new Ping();
 				strPingIp += ipIndex.ToString();
-				if (strPingIp == "192.168.0.1234")
-				{
-
-				}
 				if(IsPingIP(strPingIp))
 				{
 					if (CheckPackage(strPingIp))
@@ -77,16 +73,18 @@ namespace NetDeviceScanControl
 			recDynBuffer = new DynamicBufferManager(0xa00000);
 			this.startCode = new byte[] { 0xff, 0xd8, 0xff };
 			this.endCode = new byte[] { 0xff, 0xd9 };
-			Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+			//socket.Blocking = false;
 			IPAddress ip = IPAddress.Parse(strIpAddress);
 			try
 			{
+				Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 				socket.Connect(new IPEndPoint(ip, 20000));
 				threadClient = new Thread(new ParameterizedThreadStart(this.ReceiveData));
 				threadClient.IsBackground = true;
 				threadClient.Start(socket);
 				Thread.Sleep(2000);
-				if (strIpAddress == "192.168.0.102")
+				if (strIpAddress == "192.168.0.106")
 				{
 
 				}
@@ -316,12 +314,17 @@ namespace NetDeviceScanControl
 			try
 			{
 				Ping ping = new Ping();
-				PingReply reply = ping.Send(strIP, 1000);
-				return true;
+				PingReply reply = ping.Send(strIP, 500);
+				if (reply.Status == IPStatus.Success)
+				{
+					return true;
+				}else
+				{
+					return false;
+				}
 			}
 			catch
 			{
-				string te = strIP;
 				return false;
 			}
 		}
