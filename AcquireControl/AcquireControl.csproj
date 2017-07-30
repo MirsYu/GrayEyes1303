@@ -4,10 +4,10 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{ED734578-CE04-4EDA-9441-44D43E050877}</ProjectGuid>
+    <ProjectGuid>{00A5CA84-69E1-48B6-9644-75FAAE0D49FB}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>NetDeviceScanControl</RootNamespace>
-    <AssemblyName>NetDeviceScanControl</AssemblyName>
+    <RootNamespace>AcquireControl</RootNamespace>
+    <AssemblyName>AcquireControl</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -30,9 +30,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="halcondotnet, Version=10.0.0.0, Culture=neutral, PublicKeyToken=4973bed59ddbf2b8, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>D:\Program Files\MVTec\HALCON-10.0\bin\dotnet20\halcondotnet.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,19 +46,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="DynamicBufferManager.cs" />
-    <Compile Include="NetDeviceScanControl.cs">
+    <Compile Include="Acquire.cs" />
+    <Compile Include="AcquireControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="NetDeviceScanControl.Designer.cs">
-      <DependentUpon>NetDeviceScanControl.cs</DependentUpon>
+    <Compile Include="AcquireControl.Designer.cs">
+      <DependentUpon>AcquireControl.cs</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="NetDeviceScanControl.resx">
-      <DependentUpon>NetDeviceScanControl.cs</DependentUpon>
+    <EmbeddedResource Include="AcquireControl.resx">
+      <DependentUpon>AcquireControl.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
