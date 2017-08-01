@@ -28,22 +28,13 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			this.acquireControl1 = new AcquireControl.AcquireControl();
 			this.SuspendLayout();
-			// 
-			// acquireControl1
-			// 
-			this.acquireControl1.Location = new System.Drawing.Point(2, 0);
-			this.acquireControl1.Name = "acquireControl1";
-			this.acquireControl1.Size = new System.Drawing.Size(661, 469);
-			this.acquireControl1.TabIndex = 0;
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(718, 479);
-			this.Controls.Add(this.acquireControl1);
 			this.Name = "Form1";
 			this.Text = "Form1";
 			this.ResumeLayout(false);
@@ -51,8 +42,6 @@
 		}
 
 		#endregion
-
-		private AcquireControl.AcquireControl acquireControl1;
 	}
 }
 

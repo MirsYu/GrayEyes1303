@@ -92,6 +92,10 @@
       <Project>{ED734578-CE04-4EDA-9441-44D43E050877}</Project>
       <Name>NetDeviceScanControl</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SerialportControl\SerialportControl.csproj">
+      <Project>{B938EA89-2F0B-4630-AB98-F7157D6EEEE9}</Project>
+      <Name>SerialportControl</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

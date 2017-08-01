@@ -16,5 +16,11 @@ namespace SerialportControl
         {
             InitializeComponent();
         }
-    }
+
+		private void button1_Click(object sender, EventArgs e)
+		{
+			textBox1.Text = System.Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+			textBox2.Text = Environment.GetEnvironmentVariable("OS");
+		}
+	}
 }
