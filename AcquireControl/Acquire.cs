@@ -18,7 +18,7 @@ public partial class HDevelopExport
 		HObject ho_Image = null;
 
 		// Local control variables 
-		HTuple hv_AcqHandle, hv_WindowHandle;
+		HTuple hv_AcqHandle;
 
 		// Initialize local and output iconic variables 
 		HOperatorSet.GenEmptyObj(out ho_Image);
@@ -39,8 +39,10 @@ public partial class HDevelopExport
 			ho_Image.Dispose();
 			HOperatorSet.GrabImageAsync(out ho_Image, hv_AcqHandle, -1);
 			HOperatorSet.GetImageSize(ho_Image, out hv_Width, out hv_Heigh);
+
 			HOperatorSet.SetPart(mWindow, 0, 0, hv_Heigh, hv_Width);
 			HOperatorSet.DispObj(ho_Image, mWindow);
+
 			//Do something
 		}
 	}
