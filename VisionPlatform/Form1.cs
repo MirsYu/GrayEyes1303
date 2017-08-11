@@ -16,7 +16,10 @@ namespace VisionPlatform
 {
 	public partial class Form1 : Form
 	{
-		delegate void Form1UpdateImage(Image<Bgr, byte> img);
+		delegate void Form1Update(Image<Bgr, byte> img,
+			ToolStripStatusLabel simpleStatus,
+			ToolStripStatusLabel runtime,
+			DataTable dataSource);
 
 		private static Image<Bgr, byte> Imgform;
 
@@ -36,18 +39,30 @@ namespace VisionPlatform
 			thread.Start();
 		}
 
-		private void UpdateImage(Image<Bgr, byte> img)
+		private void UpdateImage(Image<Bgr, byte> img,
+			ToolStripStatusLabel simpleStatus,
+			ToolStripStatusLabel runtime,
+			DataTable dataSource)
 		{
 			if (this.InvokeRequired)
 			{
-				this.Invoke(new Form1UpdateImage(delegate (Image<Bgr, Byte> newImg)
+				this.Invoke(new Form1Update(delegate (Image<Bgr, Byte> newImg,
+					ToolStripStatusLabel newsimpleStatus,
+					ToolStripStatusLabel newruntime,
+					DataTable newdataSource)
 				{
 					this.imageBox1.Image = newImg;
-				}),img);
+					toolStripStatusLabel1.Image = newsimpleStatus.Image;
+					toolStripStatusLabel2.Text = newruntime.Text;
+					dataGridView1.DataSource = newdataSource.DefaultView;
+				}),img, simpleStatus, runtime, dataSource);
 			}
 			else
 			{
 				imageBox1.Image = img;
+				toolStripStatusLabel1.Image = simpleStatus.Image;
+				toolStripStatusLabel2.Text = runtime.Text;
+				dataGridView1.DataSource = dataSource.DefaultView;
 			}
 		}
 	}
