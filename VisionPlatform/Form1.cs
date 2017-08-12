@@ -11,6 +11,7 @@ using Emgu.CV;
 using Emgu.Util;
 using Emgu.CV.Structure;
 using System.Threading;
+using Emgu.CV.UI;
 
 namespace VisionPlatform
 {
@@ -31,12 +32,20 @@ namespace VisionPlatform
 		public Form1()
 		{
 			InitializeComponent();
-			Imgform = new Image<Bgr, byte>(@".\Image\QR.jpg");
+			//Imgform = new Image<Bgr, byte>(@"./Image/QR.jpg");
 
+			Capture capture = new Capture(); //create a camera captue
+			Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
+			{  //run this until application closed (close button click on image viewer)
+				Imgform = capture.QueryFrame().ToImage<Bgr,byte>(); //draw the image obtained from camera
+				//imageBox1.Image = Imgform;
+
+			});
 			BarCode.Instance.UpdateImageDelegate += UpdateImage;
 			Thread thread = new Thread(BarCode.Instance.ImageProcessing);
 			thread.IsBackground = true;
 			thread.Start();
+
 		}
 
 		private void UpdateImage(Image<Bgr, byte> img,

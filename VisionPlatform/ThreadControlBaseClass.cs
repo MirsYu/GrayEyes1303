@@ -72,7 +72,7 @@ namespace VisionPlatform
 
 		protected void ShowFormImage()
 		{
-			UpdateImageDelegate(outImg, SimpleStatus, mRuntime, DataSource);
+			UpdateImageDelegate(SoureceImage, SimpleStatus, mRuntime, DataSource);
 		}
 	}
 }

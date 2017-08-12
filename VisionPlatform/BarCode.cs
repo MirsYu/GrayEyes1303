@@ -25,39 +25,42 @@ namespace VisionPlatform
 
 		public override void ImageProcessing()
 		{
-			try
+			while (true)
 			{
-				Image<Gray, byte> imgtest = SoureceImage.Clone().Convert<Gray, byte>();
-				//CvInvoke.GaussianBlur(SoureceImage, imgtest, new Size(3, 3), 0, 0);
-				//CvInvoke.Threshold(imgtest, imgtest, 100, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-				IBarcodeReader reader = new BarcodeReader();
-
-				DateTime timeStart = DateTime.Now;
-				Result result = reader.Decode(imgtest.ToBitmap());
-				double runTime = -1D;
-				if (result != null)
+				try
 				{
-					runTime = (result.Timestamp - timeStart.Ticks) / 10000D;
+					Image<Gray, byte> imgtest = SoureceImage.Clone().Convert<Gray, byte>();
+					//CvInvoke.GaussianBlur(SoureceImage, imgtest, new Size(3, 3), 0, 0);
+					//CvInvoke.Threshold(imgtest, imgtest, 100, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
+					IBarcodeReader reader = new BarcodeReader();
+
+					DateTime timeStart = DateTime.Now;
+					Result result = reader.Decode(imgtest.ToBitmap());
+					double runTime = -1D;
+					if (result != null)
+					{
+						runTime = (result.Timestamp - timeStart.Ticks) / 10000D;
+
+						SimpleStatus.Image = Resources.SimpleState_True;
+						mRuntime.Text = "运行时间:" + runTime + "毫秒";
+						DataSource = new DataTable();
+						DataSource.Columns.Add("条码类型", typeof(System.String));
+						DataSource.Columns.Add("解码的字符串", typeof(System.String));
+						DataRow newLine = DataSource.NewRow();
+						newLine["条码类型"] = result.BarcodeFormat.ToString();
+						newLine["解码的字符串"] = result.Text;
+						DataSource.Rows.Add(newLine);
+					}
+					SoureceImage = imgtest.Clone().Convert<Bgr, byte>();
+					ShowFormImage();
 				}
-
-				SoureceImage = imgtest.Clone().Convert<Bgr, byte>();
-				SimpleStatus.Image = Resources.SimpleState_True;
-				mRuntime.Text = "运行时间:"+ runTime +"毫秒";
-				DataSource.Columns.Add("条码类型", typeof(System.String));
-				DataSource.Columns.Add("解码的字符串", typeof(System.String));
-				DataRow newLine = DataSource.NewRow();
-				newLine["条码类型"] = result.BarcodeFormat.ToString();
-				newLine["解码的字符串"] = result.Text;
-				DataSource.Rows.Add(newLine);
-				ShowFormImage();
+				catch (Exception)
+				{
+					SimpleStatus.Image = Resources.SimpleState_False;
+					mRuntime.Text = "运行时间:" + 0 + "毫秒";
+					ShowFormImage();
+				}
 			}
-			catch (Exception)
-			{
-				SimpleStatus.Image = Resources.SimpleState_False;
-				mRuntime.Text = "运行时间:" + 0 + "毫秒";
-				ShowFormImage();
-			}
-
 		}
 	}
 }
