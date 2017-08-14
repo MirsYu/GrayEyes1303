@@ -77,8 +77,12 @@
     <Reference Include="Emgu.Util">
       <HintPath>..\Reference\Emgucv\Emgu.Util.dll</HintPath>
     </Reference>
+    <Reference Include="NetDeviceScanControl">
+      <HintPath>..\Control\NetDeviceScanControl\obj\Debug\NetDeviceScanControl.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -198,7 +202,6 @@
     <None Include="Resources\SimpleState_02.gif" />
     <None Include="Resources\SimpleState_False.gif" />
     <None Include="Resources\SimpleState_True.png" />
-    <Content Include="timg.jpg" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.5.2">

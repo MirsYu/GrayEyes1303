@@ -32,15 +32,26 @@ namespace VisionPlatform
 		public Form1()
 		{
 			InitializeComponent();
-			//Imgform = new Image<Bgr, byte>(@"./Image/QR.jpg");
 
-			Capture capture = new Capture(); //create a camera captue
+			NetCamera.Camera cam = new NetCamera.Camera();
+			cam.GetGateWay();
+			cam.GetCameraIP();
+
 			Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
-			{  //run this until application closed (close button click on image viewer)
-				Imgform = capture.QueryFrame().ToImage<Bgr,byte>(); //draw the image obtained from camera
-				//imageBox1.Image = Imgform;
-
+			{
+				if (cam.CameraImg != null)
+				{
+					Imgform = new Image<Bgr, byte>(new Bitmap(cam.CameraImg));
+				}
 			});
+
+			//Imgform = new Image<Bgr, byte>(@"./Image/QR.jpg");
+			//Capture capture = new Capture(); //create a camera captue
+			//Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
+			//{  //run this until application closed (close button click on image viewer)
+			//	Imgform = capture.QueryFrame().ToImage<Bgr, byte>(); //draw the image obtained from camera
+			//														 //imageBox1.Image = Imgform;
+			//});
 			BarCode.Instance.UpdateImageDelegate += UpdateImage;
 			Thread thread = new Thread(BarCode.Instance.ImageProcessing);
 			thread.IsBackground = true;

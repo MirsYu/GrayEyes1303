@@ -25,13 +25,10 @@ namespace VisionPlatform
 		private static Image<Bgr, byte> outImg;
 
 		// 状态输出
-
 		protected ToolStripStatusLabel SourSimpleStatus = new ToolStripStatusLabel();
-
 		protected ToolStripStatusLabel SourRunTime = new ToolStripStatusLabel();
 
 		// 数据源输出
-
 		protected DataTable SourDataTable = new DataTable();
 
 		/// <summary>

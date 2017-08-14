@@ -65,8 +65,8 @@ namespace VisionPlatform.NetCamera
 			index = mGateWay.LastIndexOf('.') + 1;
 			mGateWay = mGateWay.Remove(index, mGateWay.Length - index);
 
-			List<int> lTh1 = new List<int>() {2,127 };
-			List<int> lTh2 = new List<int>() { 128, 254 };
+			List<int> lTh1 = new List<int>() {103,104 };
+			List<int> lTh2 = new List<int>() { 105, 106 };
 			Thread th1 = new Thread(new ParameterizedThreadStart(ThreadScan));
 			Thread th2 = new Thread(new ParameterizedThreadStart(ThreadScan));
 			th1.IsBackground = true;
@@ -80,7 +80,7 @@ namespace VisionPlatform.NetCamera
 			try
 			{
 				Ping ping = new Ping();
-				PingReply reply = ping.Send(strIP, 500);
+				PingReply reply = ping.Send(strIP, 1000);
 				if (reply.Status == IPStatus.Success)
 				{
 					ping = null;
@@ -107,7 +107,22 @@ namespace VisionPlatform.NetCamera
 			{
 				readyIP = mGateWay + i.ToString();
 				if (IsPingIP(readyIP))
-					CheckPackage(readyIP);
+				{
+					try
+					{
+						Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+						socket.Connect(new IPEndPoint(IPAddress.Parse(readyIP), 20000));
+						CameraIP = ((System.Net.IPEndPoint)socket.RemoteEndPoint).Address.ToString();
+						socket.Close();
+						CheckPackage();
+						GC.Collect();
+						return;
+					}
+					catch (Exception)
+					{
+						GC.Collect();
+					}
+				}
 			}
 		}
 
@@ -121,61 +136,34 @@ namespace VisionPlatform.NetCamera
 		private int lastEndPosition;
 		private int lastStartPosition;
 		private Stream recStream;
+		private Socket socket;
 
-		private bool bResult = false;
-
-		public bool CheckPackage(string strIpAddress)
+		public void CheckPackage()
 		{
+			IPAddress ip = IPAddress.Parse(CameraIP);
 			recDynBuffer = new DynamicBufferManager(0xa00000);
 			this.startCode = new byte[] { 0xff, 0xd8, 0xff };
 			this.endCode = new byte[] { 0xff, 0xd9 };
-			byte[] buffMsgRec = new byte[0xa00000];
 
-			IPAddress ip = IPAddress.Parse(strIpAddress);
-			try
-			{
-				Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-				socket.Connect(new IPEndPoint(ip, 20000));
-				threadClient = new Thread(new ParameterizedThreadStart(this.ReceiveData));
-				threadClient.IsBackground = true;
-				threadClient.Start(socket);
-				if (socket.Poll(-1,SelectMode.SelectRead))
-				{
-					int nRead = socket.Receive(buffMsgRec);
-					if (nRead == 0)
-					{
-						return false;
-					}
-				}
-				return true;
-			}
-			catch (Exception)
-			{
-				return false;
-			}
-
+			socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			socket.Connect(ip, 20000);
+			threadClient = new Thread(ReceiveData);
+			threadClient.IsBackground = true;
+			threadClient.Start();
 		}
 
-		private void ReceiveData(object clienSocket)
+		private void ReceiveData()
 		{
 			byte[] buffMsgRec = new byte[0xa00000];
-			Socket clien = clienSocket as Socket;
 			while (true)
 			{
-
-				length = clien.Receive(buffMsgRec);
+				length = socket.Receive(buffMsgRec);
 				this.recDynBuffer.WriteBuffer(buffMsgRec, 0, length);
-				if (!showData())
-				{
-					clien.Close();
-					break;
-				}
-				else
-					CameraIP = ((System.Net.IPEndPoint)clien.RemoteEndPoint).AddressFamily.ToString();
+				showData();
 			}
 		}
 
-		private bool showData()
+		private void showData()
 		{
 			int startIndex = -1;
 			int num2 = -1;
@@ -185,7 +173,7 @@ namespace VisionPlatform.NetCamera
 				this.lastStartPosition = this.lastEndPosition = -1;
 			}
 			startIndex = this.IndexOf(this.recDynBuffer.Buffer, this.startCode, 0, this.recDynBuffer.DataCount);
-			if (startIndex != -1 && bResult == false)
+			if (startIndex != -1)
 			{
 				this.lastStartPosition = startIndex;
 				num2 = this.IndexOf(this.recDynBuffer.Buffer, this.endCode, startIndex, this.recDynBuffer.DataCount);
@@ -195,10 +183,8 @@ namespace VisionPlatform.NetCamera
 					this.recStream = new MemoryStream(this.recDynBuffer.Buffer, startIndex, num2 - startIndex);
 					Image image = Image.FromStream(recStream, true);
 					CameraImg = image;
-					return true;
 				}
 			}
-			return false;
 		}
 
 		internal int IndexOf(byte[] srcBytes, byte[] searchBytes, int startIndex, int srcLength)

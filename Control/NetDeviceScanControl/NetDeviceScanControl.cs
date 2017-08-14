@@ -40,7 +40,7 @@ namespace NetDeviceScanControl
 			Ping ping;
 			index = strGateWay.LastIndexOf('.') + 1;
 			strPingIp = strGateWay.Remove(index, strGateWay.Length - index);
-			for (int ipIndex = 1; ipIndex < 255; ipIndex++)
+			for (int ipIndex = 104; ipIndex < 106; ipIndex++)
 			{
 				strPingIp = strGateWay.Remove(index, strGateWay.Length - index);
 				ping = new Ping();
