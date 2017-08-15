@@ -34,13 +34,17 @@ namespace VisionPlatform.NetCamera
 			set { mgateWay = value; }
 		}
 
+
+		private List<Thread> ScanIP = new List<Thread>();
+
 		public void GetGateWay()
 		{
 			NetworkInterface[] nics = NetworkInterface.GetAllNetworkInterfaces();
 			foreach (NetworkInterface network in nics)
 			{
 				string strTestMac = network.GetPhysicalAddress().ToString();
-				if (strTestMac == "40490F231791" || strTestMac == "b644205b733a")
+				if (strTestMac == "@40490F231791" || strTestMac == "b644205b733a" ||
+					strTestMac == "C85B7691B49F")
 				{
 					IPInterfaceProperties ip = network.GetIPProperties();
 					GatewayIPAddressInformationCollection getways = ip.GatewayAddresses;
@@ -65,14 +69,17 @@ namespace VisionPlatform.NetCamera
 			index = mGateWay.LastIndexOf('.') + 1;
 			mGateWay = mGateWay.Remove(index, mGateWay.Length - index);
 
-			List<int> lTh1 = new List<int>() {103,104 };
-			List<int> lTh2 = new List<int>() { 105, 106 };
-			Thread th1 = new Thread(new ParameterizedThreadStart(ThreadScan));
-			Thread th2 = new Thread(new ParameterizedThreadStart(ThreadScan));
-			th1.IsBackground = true;
-			th2.IsBackground = true;
-			th1.Start(lTh1);
-			th2.Start(lTh2);
+			int thCout = 10;
+			int step = 255 / thCout;
+			int pick = 255 - (step * thCout);
+			for (int i = 0; i < thCout; i++)
+			{
+				List<int> lTh = new List<int> { i == 0 ? 2 : (i * step)+1, i == thCout - 1 ? ((i + 1) * step) + pick : ((i + 1) * step) };
+				Thread th = new Thread(new ParameterizedThreadStart(ThreadScan));
+				th.IsBackground = true;
+				th.Start(lTh);
+				ScanIP.Add(th);
+			}
 		}
 
 		private bool IsPingIP(string strIP)
@@ -136,7 +143,6 @@ namespace VisionPlatform.NetCamera
 		private int lastEndPosition;
 		private int lastStartPosition;
 		private Stream recStream;
-		private Socket socket;
 
 		public void CheckPackage()
 		{
@@ -145,16 +151,24 @@ namespace VisionPlatform.NetCamera
 			this.startCode = new byte[] { 0xff, 0xd8, 0xff };
 			this.endCode = new byte[] { 0xff, 0xd9 };
 
-			socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			socket.Connect(ip, 20000);
-			threadClient = new Thread(ReceiveData);
+			threadClient = new Thread(new ParameterizedThreadStart(ReceiveData));
 			threadClient.IsBackground = true;
-			threadClient.Start();
+			threadClient.Start(socket);
+			
 		}
 
-		private void ReceiveData()
+		private void ReceiveData(object cilentsocket)
 		{
 			byte[] buffMsgRec = new byte[0xa00000];
+			Socket socket = cilentsocket as Socket;
+			for (int i = 0; i < ScanIP.Count; i++)
+			{
+				ScanIP[i].Abort();
+			}
+			ScanIP.Clear();
+			GC.Collect();
 			while (true)
 			{
 				length = socket.Receive(buffMsgRec);
@@ -238,6 +252,5 @@ namespace VisionPlatform.NetCamera
 			return -1;
 		}
 		#endregion
-
 	}
 }

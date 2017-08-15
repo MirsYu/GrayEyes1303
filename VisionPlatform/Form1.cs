@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using Emgu.CV;
+using Emgu.CV.Structure;
+using System;
 using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using Emgu.CV;
-using Emgu.Util;
-using Emgu.CV.Structure;
 using System.Threading;
-using Emgu.CV.UI;
+using System.Windows.Forms;
 
 namespace VisionPlatform
 {
@@ -33,30 +26,29 @@ namespace VisionPlatform
 		{
 			InitializeComponent();
 
-			NetCamera.Camera cam = new NetCamera.Camera();
-			cam.GetGateWay();
-			cam.GetCameraIP();
+			//NetCamera.Camera cam = new NetCamera.Camera();
+			//cam.GetGateWay();
+			//cam.GetCameraIP();
 
-			Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
-			{
-				if (cam.CameraImg != null)
-				{
-					Imgform = new Image<Bgr, byte>(new Bitmap(cam.CameraImg));
-				}
-			});
+			//Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
+			//{
+			//	if (cam.CameraImg != null)
+			//	{
+			//		Imgform = new Image<Bgr, byte>(new Bitmap(cam.CameraImg));
+			//	}
+			//});
 
 			//Imgform = new Image<Bgr, byte>(@"./Image/QR.jpg");
-			//Capture capture = new Capture(); //create a camera captue
-			//Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
-			//{  //run this until application closed (close button click on image viewer)
-			//	Imgform = capture.QueryFrame().ToImage<Bgr, byte>(); //draw the image obtained from camera
-			//														 //imageBox1.Image = Imgform;
-			//});
+			Capture capture = new Capture();
+			Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
+			{
+				Imgform = capture.QueryFrame().ToImage<Bgr, byte>();
+				//imageBox1.Image = Imgform;
+			});
 			BarCode.Instance.UpdateImageDelegate += UpdateImage;
 			Thread thread = new Thread(BarCode.Instance.ImageProcessing);
 			thread.IsBackground = true;
 			thread.Start();
-
 		}
 
 		private void UpdateImage(Image<Bgr, byte> img,

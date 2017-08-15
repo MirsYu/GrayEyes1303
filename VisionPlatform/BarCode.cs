@@ -1,17 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Emgu.CV;
-using Emgu.Util;
+﻿using Emgu.CV;
+using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using System.Drawing;
-using ZXing;
-using System.Diagnostics;
-using System.Windows.Forms;
+using Emgu.CV.Util;
+using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Data;
+using System.Drawing;
 using VisionPlatform.Properties;
+using ZXing;
+using ZXing.QrCode;
 
 namespace VisionPlatform
 {
@@ -32,10 +30,8 @@ namespace VisionPlatform
 					try
 					{
 						Image<Gray, byte> imgtest = SoureceImage.Clone().Convert<Gray, byte>();
-						//CvInvoke.GaussianBlur(SoureceImage, imgtest, new Size(3, 3), 0, 0);
-						//CvInvoke.Threshold(imgtest, imgtest, 100, 255, Emgu.CV.CvEnum.ThresholdType.Binary);
-						IBarcodeReader reader = new BarcodeReader();
 
+						IBarcodeReader reader = new BarcodeReader();
 						DateTime timeStart = DateTime.Now;
 						Result result = reader.Decode(imgtest.ToBitmap());
 						double runTime = -1D;
