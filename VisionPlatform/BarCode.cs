@@ -1,15 +1,12 @@
 ﻿using Emgu.CV;
-using Emgu.CV.CvEnum;
 using Emgu.CV.Structure;
-using Emgu.CV.Util;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Data;
-using System.Drawing;
 using VisionPlatform.Properties;
 using ZXing;
-using ZXing.QrCode;
+using Emgu.CV.ML;
+using Emgu.CV.CvEnum;
+using System.Drawing;
 
 namespace VisionPlatform
 {
@@ -25,39 +22,89 @@ namespace VisionPlatform
 		{
 			while (true)
 			{
-				if (SoureceImage != null)
+				//imageHanding();
+				getBatCode();
+			}
+		}
+
+		public void imageHanding()
+		{
+			if (SoureceImage !=null )
+			{
+				try
 				{
-					try
-					{
-						Image<Gray, byte> imgtest = SoureceImage.Clone().Convert<Gray, byte>();
+					double cannyThreshold = 100;
+					double cannyThresholdLinking = 200;
 
-						IBarcodeReader reader = new BarcodeReader();
-						DateTime timeStart = DateTime.Now;
-						Result result = reader.Decode(imgtest.ToBitmap());
-						double runTime = -1D;
-						if (result != null)
+					Image<Gray, byte> imgtest = SoureceImage.Clone();
+					CvInvoke.Canny(imgtest, imgtest, cannyThreshold, cannyThresholdLinking);
+					SoureceImage = imgtest.CopyBlank();
+
+					SoureceImage.Bitmap = imgtest.Bitmap;
+					ShowFormImage();
+				}
+				catch (Exception)
+				{
+					SimpleStatus.Image = Resources.SimpleState_False;
+					mRuntime.Text = "运行时间:" + 0 + "毫秒";
+					ShowFormImage();
+				}
+			}
+		}
+
+		public void getBatCode()
+		{
+			if (SoureceImage != null)
+			{
+				try
+				{
+					Image<Gray, byte> imgtest = SoureceImage.Clone();
+
+					IBarcodeReader reader = new BarcodeReader();
+
+					DateTime timeStart = DateTime.Now;
+					Result result = reader.Decode(imgtest.ToBitmap());
+					double runTime = -1D;
+					if (result != null)
+					{
+						runTime = (result.Timestamp - timeStart.Ticks) / 10000D;
+
+						SimpleStatus.Image = Resources.SimpleState_True;
+						mRuntime.Text = "运行时间:" + runTime + "毫秒";
+						DataSource = new DataTable();
+						DataSource.Columns.Add("条码类型", typeof(System.String));
+						DataSource.Columns.Add("解码的字符串", typeof(System.String));
+						DataRow newLine = DataSource.NewRow();
+						newLine["条码类型"] = result.BarcodeFormat.ToString();
+						newLine["解码的字符串"] = result.Text;
+						DataSource.Rows.Add(newLine);
+						//QR
+						ResultPoint[] tete =  result.ResultPoints;
+						int offsetx = 0;
+						int offsety = 0;
+						if (tete.Length == 4)
 						{
-							runTime = (result.Timestamp - timeStart.Ticks) / 10000D;
-
-							SimpleStatus.Image = Resources.SimpleState_True;
-							mRuntime.Text = "运行时间:" + runTime + "毫秒";
-							DataSource = new DataTable();
-							DataSource.Columns.Add("条码类型", typeof(System.String));
-							DataSource.Columns.Add("解码的字符串", typeof(System.String));
-							DataRow newLine = DataSource.NewRow();
-							newLine["条码类型"] = result.BarcodeFormat.ToString();
-							newLine["解码的字符串"] = result.Text;
-							DataSource.Rows.Add(newLine);
+							offsetx = (int)(tete[2].X - tete[3].X) * 4 / 3;
+							offsety = (int)(tete[2].X - tete[3].X) * 4 / 3;
 						}
-						SoureceImage = imgtest.Clone().Convert<Bgr, byte>();
-						ShowFormImage();
+
+						int x = (int)(tete[1].X - offsetx);
+						int y = (int)(tete[1].Y - offsety);
+						int width = (int)(tete[2].X - tete[1].X + offsetx * 2);
+						int height = (int)(tete[0].Y - tete[1].Y + offsety * 2);
+						Rectangle rect = new Rectangle(x, y, width, height);
+						imgtest.Draw(rect, new Gray(), 1);
 					}
-					catch (Exception)
-					{
-						SimpleStatus.Image = Resources.SimpleState_False;
-						mRuntime.Text = "运行时间:" + 0 + "毫秒";
-						ShowFormImage();
-					}
+					//SoureceImage = imgtest.CopyBlank();
+					//SoureceImage.Bitmap = imgtest.Bitmap;
+					SoureceImage = imgtest.Clone();
+					ShowFormImage();
+				}
+				catch (Exception)
+				{
+					SimpleStatus.Image = Resources.SimpleState_False;
+					mRuntime.Text = "运行时间:" + 0 + "毫秒";
+					ShowFormImage();
 				}
 			}
 		}

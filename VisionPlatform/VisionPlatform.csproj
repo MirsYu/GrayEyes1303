@@ -71,6 +71,9 @@
     <Reference Include="Emgu.CV">
       <HintPath>..\Reference\Emgucv\Emgu.CV.dll</HintPath>
     </Reference>
+    <Reference Include="Emgu.CV.ML">
+      <HintPath>..\Reference\Emgucv\Emgu.CV.ML.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV.UI">
       <HintPath>..\Reference\Emgucv\Emgu.CV.UI.dll</HintPath>
     </Reference>
@@ -184,6 +187,18 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Image\test.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Image\timg %281%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Image\timg %282%29.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Image\timg.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Image\未标题-1.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\Opencv_64\cvextern.dll">

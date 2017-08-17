@@ -15,14 +15,14 @@ namespace VisionPlatform
 	{
 
 		// 定义一个更新图像委托
-		public delegate void UpdateImage(Image<Bgr, byte> img, 
+		public delegate void UpdateImage(Image<Gray, byte> img, 
 			ToolStripStatusLabel simpleStatus,
 			ToolStripStatusLabel runtime,
 			DataTable dataSource);
 		public event UpdateImage UpdateImageDelegate;
 
 		// 图像输出
-		private static Image<Bgr, byte> outImg;
+		private static Image<Gray, byte> outImg;
 
 		// 状态输出
 		protected ToolStripStatusLabel SourSimpleStatus = new ToolStripStatusLabel();
@@ -34,7 +34,7 @@ namespace VisionPlatform
 		/// <summary>
 		/// 子类图像
 		/// </summary>
-		protected Image<Bgr, byte> SoureceImage
+		protected Image<Gray, byte> SoureceImage
 		{
 			// 得到form上全局img
 			get { return Form1.Image1; }
