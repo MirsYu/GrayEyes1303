@@ -36,7 +36,7 @@ namespace VisionPlatform
 				{
 					Imgform = new Image<Gray, byte>(new Bitmap(cam.CameraImg));
 				}
-			});
+				});
 
 			//Imgform = new Image<Gray, byte>(@"./Image/未标题-1.jpg");
 			//Capture capture = new Capture();
