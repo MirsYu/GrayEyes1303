@@ -199,7 +199,7 @@
     <Content Include="Image\timg.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Image\未标题-1.jpg">
+    <Content Include="Image\未标题-1.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Lib\Opencv_64\cvextern.dll">
