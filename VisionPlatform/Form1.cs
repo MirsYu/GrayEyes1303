@@ -66,7 +66,9 @@ namespace VisionPlatform
 					this.imageBox1.Image = newImg.Convert<Gray,byte>();
 					toolStripStatusLabel1.Image = newsimpleStatus.Image;
 					toolStripStatusLabel2.Text = newruntime.Text;
-					dataGridView1.DataSource = newdataSource.DefaultView;
+					DataView data = dataGridView1.DataSource as DataView;
+					if (data != newdataSource.DefaultView)
+						dataGridView1.DataSource = newdataSource.DefaultView;
 				}),img, simpleStatus, runtime, dataSource);
 			}
 			else
