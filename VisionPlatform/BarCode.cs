@@ -45,42 +45,19 @@ namespace VisionPlatform
 					CvInvoke.Threshold(img, img, 0, 255, ThresholdType.Otsu);
 					// 高斯滤波
 					CvInvoke.GaussianBlur(img, img, new Size(3, 3), 0);
-					// 梯度图
-					Image<Gray, byte> grad_x1 = new Image<Gray, byte>(img.Size);
-					Image<Gray, byte> grad_y1 = new Image<Gray, byte>(img.Size);
-					Image<Gray, byte> grad_all = new Image<Gray, byte>(img.Size);
-					CvInvoke.Sobel(img, grad_x1, img.Depth,0, 1, 3);
-					CvInvoke.Sobel(img, grad_y1, img.Depth,1, 0, 3);
-					CvInvoke.Add(grad_x1, grad_y1, grad_all);
-
+					// 形态学梯度运算
+					Mat StructingElement = CvInvoke.GetStructuringElement(ElementShape.Ellipse, new Size(5, 5), new Point(-1, -1));
+					CvInvoke.MorphologyEx(img, img, MorphOp.Gradient, StructingElement, new Point(-1, -1), 6, BorderType.Default, new MCvScalar(0));
+					// 边缘检测
 					CvInvoke.Canny(img, img, 100, 200);
-					// 腐蚀
-					//Mat StructingElement = CvInvoke.GetStructuringElement(ElementShape.Ellipse, new Size(5, 5), new Point(-1, -1));
-					//CvInvoke.Erode(img, img, StructingElement, new Point(-1, -1), 6, BorderType.Default, new MCvScalar(0));
-					//UMat image1 = img.Clone();
-					//CvInvoke.Erode(img, image1, StructingElement, new Point(-1, -1), 1, BorderType.Default, new MCvScalar(0));
-					//UMat img_result = img.Clone();
-					// 相减找出形态学边界
-					//CvInvoke.Subtract(img, image1, img);
-					// 寻找轮廓
-					//UMat hierarchy = new UMat();
-					//using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
-					//{
-					//	CvInvoke.FindContours(img_result, contours, hierarchy, RetrType.Tree, ChainApproxMethod.ChainApproxSimple);
-					//}
 
-					//LineSegment2D[] lines = CvInvoke.HoughLinesP(img, 1, Math.PI / 45.0, 20, 30, 10);
-					//Image<Bgr, Byte> lineImage = SoureceImage.Convert<Bgr, byte>().CopyBlank();
-					//foreach (LineSegment2D line in lines)
-					//{
-					//	lineImage.Draw(line, new Bgr(Color.White), 2);
-					//}
 
 					List<RotatedRect> boxList = new List<RotatedRect>();
-
+					List<int> index = new List<int>();
 					using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
 					{
 						CvInvoke.FindContours(img, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
+
 						int count = contours.Size;
 						for (int i = 0; i < count; i++)
 						{
@@ -88,14 +65,13 @@ namespace VisionPlatform
 							using (VectorOfPoint approxContour = new VectorOfPoint())
 							{
 								CvInvoke.ApproxPolyDP(contour, approxContour, CvInvoke.ArcLength(contour, true) * 0.05, true);
-								if (CvInvoke.ContourArea(approxContour, false) > 250)
+								if (CvInvoke.ContourArea(approxContour, false) > 200)
 								{
 									if (approxContour.Size == 4)
 									{
 										bool isRectangle = true;
 										Point[] pts = approxContour.ToArray();
 										LineSegment2D[] edges = PointCollection.PolyLine(pts, true);
-
 										for (int j = 0; j < edges.Length; j++)
 										{
 											double angle = Math.Abs(
@@ -106,16 +82,32 @@ namespace VisionPlatform
 												break;
 											}
 										}
-										if (isRectangle) boxList.Add(CvInvoke.MinAreaRect(approxContour));
+										if (isRectangle)
+										{
+											boxList.Add(CvInvoke.MinAreaRect(approxContour));
+										}
 									}
 								}
 							}
 						}
 					}
 					Image<Bgr, Byte> lineImage = SoureceImage.Convert<Bgr, byte>().CopyBlank();
+					Image<Gray, byte> testimg = SoureceImage.CopyBlank();
 					foreach (RotatedRect box in boxList)
+					{
 						lineImage.Draw(box, new Bgr(Color.DarkOrange), 2);
-					SoureceImage.Bitmap = lineImage.Bitmap;
+						PointF[] vertices = new PointF[4];
+						vertices = box.GetVertices();
+						//for (int i = 0; i < 4; i++)
+						//line(image, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0));
+						Rectangle brect = box.MinAreaRect();
+						lineImage.Draw(brect, new Bgr(Color.DarkOrange), 2);
+						SoureceImage.ROI = brect;
+						testimg = SoureceImage.Clone();
+						SoureceImage.ROI = System.Drawing.Rectangle.Empty;
+					}
+
+					SoureceImage.Bitmap = testimg.Bitmap;
 					ShowFormImage();
 				}
 				catch (Exception)

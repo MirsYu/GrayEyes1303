@@ -37,9 +37,10 @@ namespace VisionPlatform
 			//		Imgform = new Image<Gray, byte>(new Bitmap(cam.CameraImg));
 			//	}
 			//	});
-			//Imgform = new Image<Gray, byte>(@"./Image/00000002_0000014F8BAAE1AD.bmp");
+			//Imgform = new Image<Gray, byte>(@"./Image/20160812233754712.jpg");
+			Imgform = new Image<Gray, byte>(@"./Image/00000002_0000014F8BAAE1AD.bmp");
 			//Imgform = new Image<Gray, byte>(@"./Image/QQ图片20170508152730.jpg");
-			Imgform = new Image<Gray, byte>(@"./Image/未标题-1.png");
+			//Imgform = new Image<Gray, byte>(@"./Image/未标题-1.png");
 			//Capture capture = new Capture();
 			//Application.Idle += new EventHandler(delegate (object sender, EventArgs e)
 			//{
