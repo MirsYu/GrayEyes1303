@@ -26,7 +26,7 @@ namespace VisionPlatform
 			//while (true)
 			{
 				imageHanding();
-				//getBatCode();
+				getBatCode();
 			}
 		}
 
@@ -37,12 +37,13 @@ namespace VisionPlatform
 				try
 				{
 					UMat img = SoureceImage.ToUMat();
+					Image<Gray, byte> otsu = SoureceImage.CopyBlank();
 					// 转灰度图
 					//CvInvoke.CvtColor(img, img, ColorConversion.Bgr2Gray);
 					// 中值滤波(去除椒盐噪声)
-					CvInvoke.MedianBlur(img, img, 3);
+					CvInvoke.MedianBlur(img, otsu, 3);
 					// Otsu二值化
-					CvInvoke.Threshold(img, img, 0, 255, ThresholdType.Otsu);
+					CvInvoke.Threshold(otsu, img, 0, 255, ThresholdType.Otsu);
 					// 高斯滤波
 					CvInvoke.GaussianBlur(img, img, new Size(3, 3), 0);
 					// 形态学梯度运算
@@ -56,6 +57,7 @@ namespace VisionPlatform
 					List<int> index = new List<int>();
 					using (VectorOfVectorOfPoint contours = new VectorOfVectorOfPoint())
 					{
+						// 寻找轮廓
 						CvInvoke.FindContours(img, contours, null, RetrType.List, ChainApproxMethod.ChainApproxSimple);
 
 						int count = contours.Size;
@@ -102,13 +104,18 @@ namespace VisionPlatform
 						//line(image, vertices[i], vertices[(i + 1) % 4], Scalar(0, 255, 0));
 						Rectangle brect = box.MinAreaRect();
 						lineImage.Draw(brect, new Bgr(Color.DarkOrange), 2);
-						SoureceImage.ROI = brect;
-						testimg = SoureceImage.Clone();
-						SoureceImage.ROI = System.Drawing.Rectangle.Empty;
+
 					}
+					otsu.ROI = boxList[1].MinAreaRect();
+					testimg = otsu.Clone();
+					otsu.ROI = Rectangle.Empty;
+					Mat mapMatrix = new Mat();
+					PointF poi = new PointF(testimg.Size.Width / 2, testimg.Size.Height / 2);
+					CvInvoke.GetRotationMatrix2D(poi, boxList[1].Angle, 1.2, mapMatrix);
+					CvInvoke.WarpAffine(testimg, testimg, mapMatrix, testimg.Size);
 
 					SoureceImage.Bitmap = testimg.Bitmap;
-					ShowFormImage();
+					//ShowFormImage();
 				}
 				catch (Exception)
 				{
@@ -130,6 +137,7 @@ namespace VisionPlatform
 					IBarcodeReader reader = new BarcodeReader();
 					List<BarcodeFormat> Possible = new List<BarcodeFormat>();
 					Possible.Add(BarcodeFormat.QR_CODE);
+					Possible.Add(BarcodeFormat.DATA_MATRIX);
 					reader.Options.PossibleFormats = Possible;
 
 					DateTime timeStart = DateTime.Now;
