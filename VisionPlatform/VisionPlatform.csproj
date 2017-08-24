@@ -74,6 +74,9 @@
     <Reference Include="Emgu.CV.ML">
       <HintPath>..\Reference\Emgucv\Emgu.CV.ML.dll</HintPath>
     </Reference>
+    <Reference Include="Emgu.CV.OCR">
+      <HintPath>..\Reference\Emgucv\Emgu.CV.OCR.dll</HintPath>
+    </Reference>
     <Reference Include="Emgu.CV.UI">
       <HintPath>..\Reference\Emgucv\Emgu.CV.UI.dll</HintPath>
     </Reference>
@@ -112,6 +115,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="NetCamera\Camera.cs" />
     <Compile Include="NetCamera\DynamicBufferManager.cs" />
+    <Compile Include="OcrCode.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -178,6 +182,12 @@
     <Content Include="Image\Issn_barcode.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="Image\license-plate.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Image\ocrTest.jpg">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Image\QQ图片20170508152730.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -231,6 +241,5 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
