@@ -36,7 +36,7 @@ namespace VisionPlatform
 			{
 				try
 				{
-					UMat img = SoureceImage.ToUMat();
+					Mat img = SoureceImage.Mat;
 					Image<Gray, byte> otsu = SoureceImage.CopyBlank();
 					// 转灰度图
 					//CvInvoke.CvtColor(img, img, ColorConversion.Bgr2Gray);
@@ -51,7 +51,6 @@ namespace VisionPlatform
 					CvInvoke.MorphologyEx(img, img, MorphOp.Gradient, StructingElement, new Point(-1, -1), 6, BorderType.Default, new MCvScalar(0));
 					// 边缘检测
 					CvInvoke.Canny(img, img, 100, 200);
-
 
 					List<RotatedRect> boxList = new List<RotatedRect>();
 					List<int> index = new List<int>();
