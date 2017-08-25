@@ -36,8 +36,8 @@ namespace VisionPlatform
 			//	{
 			//		Imgform = new Image<Gray, byte>(new Bitmap(cam.CameraImg));
 			//	}
-			//	});
-			Imgform = new Image<Gray, byte>(@"./Image/license-plate.jpg");
+			//});
+			//Imgform = new Image<Gray, byte>(@"./Image/license-plate.jpg");
 			//Imgform = new Image<Gray, byte>(@"./Image/00000002_0000014F8BAAE1AD.bmp");
 			//Imgform = new Image<Gray, byte>(@"./Image/QQ图片20170508152730.jpg");
 			//Imgform = new Image<Gray, byte>(@"./Image/未标题-1.png");
@@ -48,15 +48,15 @@ namespace VisionPlatform
 			//	//imageBox1.Image = Imgform;
 			//});
 
-			//BarCode.Instance.UpdateImageDelegate += UpdateImage;
-			//Thread thread = new Thread(BarCode.Instance.ImageProcessing);
-			//thread.IsBackground = true;
-			//thread.Start();
-
-			OcrCode.Instance.UpdateImageDelegate += UpdateImage;
-			Thread thread = new Thread(OcrCode.Instance.ImageProcessing);
+			BarCode.Instance.UpdateImageDelegate += UpdateImage;
+			Thread thread = new Thread(BarCode.Instance.ImageProcessing);
 			thread.IsBackground = true;
 			thread.Start();
+
+			//OcrCode.Instance.UpdateImageDelegate += UpdateImage;
+			//Thread thread = new Thread(OcrCode.Instance.ImageProcessing);
+			//thread.IsBackground = true;
+			//thread.Start();
 		}
 
 		private void UpdateImage(Image<Gray, byte> img,

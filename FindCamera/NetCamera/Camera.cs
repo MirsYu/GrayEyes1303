@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Emgu.Util;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -9,7 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 
-namespace VisionPlatform.NetCamera
+namespace FindCamera.NetCamera
 {
 	public class Camera
 	{
@@ -27,6 +28,13 @@ namespace VisionPlatform.NetCamera
 			set { camImg = value; }
 		}
 
+		private string localMac;
+		public string LocalMac
+		{
+			get { return localMac; }
+			set { localMac = value; }
+		}
+
 		private string mgateWay;
 		public string mGateWay
 		{
@@ -34,8 +42,19 @@ namespace VisionPlatform.NetCamera
 			set { mgateWay = value; }
 		}
 
+		private int m_thCout;
+		public int thCout
+		{
+			get { return m_thCout; }
+			set { m_thCout = value; }
+		}
+
 
 		private List<Thread> ScanIP = new List<Thread>();
+		public List<Thread> scanIP
+		{
+			get { return ScanIP; }
+		}
 
 		public void GetGateWay()
 		{
@@ -43,8 +62,7 @@ namespace VisionPlatform.NetCamera
 			foreach (NetworkInterface network in nics)
 			{
 				string strTestMac = network.GetPhysicalAddress().ToString();
-				if (strTestMac == "40490F231791" || strTestMac == "b644205b733a" ||
-					strTestMac == "@C85B7691B49F")
+				if (strTestMac == LocalMac)
 				{
 					IPInterfaceProperties ip = network.GetIPProperties();
 					GatewayIPAddressInformationCollection getways = ip.GatewayAddresses;
@@ -70,12 +88,11 @@ namespace VisionPlatform.NetCamera
 			index = mGateWay.LastIndexOf('.') + 1;
 			mGateWay = mGateWay.Remove(index, mGateWay.Length - index);
 
-			int thCout = 10;
 			int step = 255 / thCout;
 			int pick = 255 - (step * thCout);
 			for (int i = 0; i < thCout; i++)
 			{
-				List<int> lTh = new List<int> { i == 0 ? 2 : (i * step)+1, i == thCout - 1 ? ((i + 1) * step) + pick : ((i + 1) * step) };
+				List<int> lTh = new List<int> { i == 0 ? 2 : (i * step) + 1, i == thCout - 1 ? ((i + 1) * step) + pick : ((i + 1) * step) };
 				Thread th = new Thread(new ParameterizedThreadStart(ThreadScan));
 				th.IsBackground = true;
 				th.Start(lTh);
@@ -111,7 +128,7 @@ namespace VisionPlatform.NetCamera
 		{
 			List<int> par = mParameter as List<int>;
 			string readyIP = "";
-			for (int i = par[0]	; i < par[1]; i++)
+			for (int i = par[0]; i < par[1]; i++)
 			{
 				readyIP = mGateWay + i.ToString();
 				if (IsPingIP(readyIP))
@@ -140,10 +157,21 @@ namespace VisionPlatform.NetCamera
 		private byte[] startCode;
 		private byte[] endCode;
 		private Thread threadClient;
+		public Thread Client
+		{
+			get { return threadClient; }
+		}
 		private int length;
 		private int lastEndPosition;
 		private int lastStartPosition;
 		private Stream recStream;
+
+		private Socket socketClient;
+		public Socket socket
+		{
+			get { return socketClient; }
+			set { socketClient = value; }
+		}
 
 		public void CheckPackage()
 		{
@@ -152,12 +180,12 @@ namespace VisionPlatform.NetCamera
 			this.startCode = new byte[] { 0xff, 0xd8, 0xff };
 			this.endCode = new byte[] { 0xff, 0xd9 };
 
-			Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+			socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
 			socket.Connect(ip, 20000);
 			threadClient = new Thread(new ParameterizedThreadStart(ReceiveData));
 			threadClient.IsBackground = true;
 			threadClient.Start(socket);
-			
+
 		}
 
 		private void ReceiveData(object cilentsocket)
@@ -253,5 +281,15 @@ namespace VisionPlatform.NetCamera
 			return -1;
 		}
 		#endregion
+
+		public void dispose()
+		{
+			socketClient.Dispose();
+			ScanIP.Clear();
+			recStream.Dispose();
+			recDynBuffer.Clear();
+			GC.Collect();
+			GC.SuppressFinalize(this);
+		}
 	}
 }

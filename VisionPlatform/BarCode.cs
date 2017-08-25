@@ -23,9 +23,9 @@ namespace VisionPlatform
 
 		public override void ImageProcessing()
 		{
-			//while (true)
+			while (true)
 			{
-				imageHanding();
+				//imageHanding();
 				getBatCode();
 			}
 		}
