@@ -229,7 +229,7 @@ namespace VisionPlatform
 			Mat thresh = new Mat();
 			// 阈值操作 120阈值大小，255最大灰度值 类型BinaryInv 反阈值
 			CvInvoke.Threshold(plate, thresh, 120, 255, ThresholdType.BinaryInv);
-
+ 
 			Size plateSize = plate.Size;
 			using (Mat plateMask = new Mat(plateSize.Height, plateSize.Width, DepthType.Cv8U, 1))
 			using (Mat plateCanny = new Mat())
